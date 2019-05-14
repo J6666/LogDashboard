@@ -36,7 +36,7 @@
                 HtmlView = false
             });
 
-
+            // 增加获取汇总数据的路由
             Routes.AddRoute(new LogDashboardRoute
             {
                 Key = "/Dashboard/GetLogData", 

@@ -26,21 +26,17 @@ namespace LogDashboard.Handle
         {
             ViewBag.dashboardNav = "active";
             ViewBag.basicLogNav = "";
-            var result = await _logRepository.GetPageListAsync(1, 10, sorts: new[] { new Sort { Ascending = false, PropertyName = "Id" } });
-
-            //ViewBag.unique = (await _logRepository.UniqueCountAsync()).Count;
-
-            //var now = DateTime.Now;
-            //var weeHours = now.Date.AddHours(23).AddMinutes(59).AddSeconds(59);
-            //ViewBag.todayCount = await _logRepository.CountAsync(x => x.LongDate >= now.Date && x.LongDate <= weeHours);
-
-            //var hour = now.AddHours(-1);
-            //ViewBag.hourCount = await _logRepository.CountAsync(x => x.LongDate >= hour && x.LongDate <= now);
-            //ViewBag.allCount = await _logRepository.CountAsync();
-
-            ////Chart Data
-            //ViewBag.ChartData = (await LogChartFactory.GetLogChart(ChartDataType.Hour).GetCharts(_logRepository)).ToJsonString();
-
+            IEnumerable<T> result = null;
+            try
+            {
+                result = await _logRepository.GetPageListAsync(1, 10, sorts: new[] { new Sort { Ascending = false, PropertyName = "Id" } });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                //throw ex;
+            }
+                        
             return await View(result);
         }
 
@@ -49,9 +45,13 @@ namespace LogDashboard.Handle
             return Json(await LogChartFactory.GetLogChart(input.ChartDataType).GetCharts(_logRepository));
         }
 
+        /// <summary>
+        /// 获取汇总数据，供首页异步调用
+        /// </summary>
+        /// <returns></returns>
         public async Task<string> GetLogData()
         {
-            var unique = 0;// (await _logRepository.UniqueCountAsync()).Count; // 当数据量较大时，该方法将会超时，导致首页无法运行
+            var unique = 0;// (await _logRepository.UniqueCountAsync()).Count; // 当数据量较大时，该方法()将会超时，导致首页无法运行
             var now = DateTime.Now;
             var weeHours = now.Date.AddHours(23).AddMinutes(59).AddSeconds(59);
             var todayCount = await _logRepository.CountAsync(x => x.LongDate >= now.Date && x.LongDate <= weeHours);

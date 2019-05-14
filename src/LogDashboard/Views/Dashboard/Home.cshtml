@@ -37,7 +37,7 @@
                     <div>
                         <span id="todayCount" class="h4 d-block font-weight-normal mb-2">0</span>
                         <span class="font-weight-light">今天的日志</span>
-                    </div> 
+                    </div>
                     <div class="h2 text-muted">
                         <i class="fa fa-external-link-square"></i>
                     </div>
@@ -120,27 +120,30 @@
                     </tr>
                 </thead>
                 <tbody class="w-100">
-                    @foreach (var item in Model)
+                    @if (Model != null)
                     {
-                        <tr class="row mx-0">
-                            <td class="col-1"><a href="javascript:void(0);" onclick="logInfo('@item.Id')">@item.Id</a></td>
-                            <td class="col-3">@item.Logger</td>
-                            <td class="col-1"><button class="btn btn-outline-@item.Level.ToUpper()">@item.Level.ToUpper()</button></td>
-                            <td class="col-4" onclick="$(this).next().show();$(this).css('display', 'none');">
-                                @{
-                                    var message = item.Message;
-                                    if (message.Length > 90)
-                                    {
-                                        message = message.Substring(0, 90) + "........";
+                        foreach (var item in Model)
+                        {
+                            <tr class="row mx-0">
+                                <td class="col-1"><a href="javascript:void(0);" onclick="logInfo('@item.Id')">@item.Id</a></td>
+                                <td class="col-3">@item.Logger</td>
+                                <td class="col-1"><button class="btn btn-outline-@item.Level.ToUpper()">@item.Level.ToUpper()</button></td>
+                                <td class="col-4" onclick="$(this).next().show();$(this).css('display', 'none');">
+                                    @{
+                                        var message = item.Message;
+                                        if (message.Length > 90)
+                                        {
+                                            message = message.Substring(0, 90) + "........";
+                                        }
                                     }
-                                }
-                                @message
-                            </td>
-                            <td class="col-4" style="display: none;" onclick="$(this).prev().show();$(this).css('display', 'none');">@item.Message</td>
-                            <td class="col-2">@item.LongDate</td>
-                            <td class="col-1"><a href="javascript:void(0);" onclick="logInfo('@item.Id-info', 'logInfoModal', 'logInfoBody')">详情</a></td>
-                            <div style="display: none" id="@item.Id-info">@item.ToJsonString()</div>
-                        </tr>
+                                    @message
+                                </td>
+                                <td class="col-4" style="display: none;" onclick="$(this).prev().show();$(this).css('display', 'none');">@item.Message</td>
+                                <td class="col-2">@item.LongDate</td>
+                                <td class="col-1"><a href="javascript:void(0);" onclick="logInfo('@item.Id-info', 'logInfoModal', 'logInfoBody')">详情</a></td>
+                                <div style="display: none" id="@item.Id-info">@item.ToJsonString()</div>
+                            </tr>
+                        }
                     }
                 </tbody>
             </table>
@@ -198,44 +201,36 @@
         ];
 
 
-        @*$(function() {
-
-            var output = JSON.parse('@Raw(ViewBag.ChartData)');
-            charts[0].all = output.All;
-            charts[0].error = output.Error;
-            initLineChart(charts[0]);
-        });*@
-
-    $(function () {
+        $(function () {
+            getLogTotal();
+            getLogChart(1);
+            setInterval(() => {
                 getLogTotal();
                 getLogChart(1);
-                setInterval(() => {
-                    getLogTotal();
-                    getLogChart(1);
-                }, 10000);
+            }, 10000);
 
-                setTimeout(() => {
-                    getLogChart(2);
-                    getLogChart(3);
-                    getLogChart(4);
-                }
-                    , 5000);
-            });
-
-            function getLogTotal() {
-
-                $.ajax({
-                    method: "POST",
-                    url: mapPath + "/Dashboard/GetLogData",
-                    data: {}
-                }).done(function (data) {
-                    if (data) {
-                        for (var itm in data) {
-                            $("#" + itm).text(data[itm]);
-                        }
-                    }
-                });
+            setTimeout(() => {
+                getLogChart(2);
+                getLogChart(3);
+                getLogChart(4);
             }
+                , 5000);
+        });
+        //异步获取数据
+        function getLogTotal() {
+
+            $.ajax({
+                method: "POST",
+                url: mapPath + "/Dashboard/GetLogData",
+                data: {}
+            }).done(function (data) {
+                if (data) {
+                    for (var itm in data) {
+                        $("#" + itm).text(data[itm]);
+                    }
+                }
+            });
+        }
 
         function getLogChart(i) {
             $.ajax({
