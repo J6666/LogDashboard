@@ -36,6 +36,13 @@
                 HtmlView = false
             });
 
+
+            Routes.AddRoute(new LogDashboardRoute
+            {
+                Key = "/Dashboard/GetLogData",
+                HtmlView = false
+            });
+
         }
     }
 }
