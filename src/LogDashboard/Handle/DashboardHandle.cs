@@ -59,6 +59,7 @@ namespace LogDashboard.Handle
             var hour = now.AddHours(-1);
             var hourCount = await _logRepository.CountAsync(x => x.LongDate >= hour && x.LongDate <= now);
             var allCount = await _logRepository.CountAsync();
+            
 
 
             return Json(new { unique, todayCount, hourCount, allCount });
