@@ -39,7 +39,7 @@
 
             Routes.AddRoute(new LogDashboardRoute
             {
-                Key = "/Dashboard/GetLogData",
+                Key = "/Dashboard/GetLogData", 
                 HtmlView = false
             });
 
